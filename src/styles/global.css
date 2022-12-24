@@ -18,4 +18,12 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
+
+  .card-menu-item:hover > div{
+    @apply text-primary fill-primary stroke-primary
+  }
+
+  .card-menu-item:hover path{
+    @apply fill-primary stroke-primary
+  }
 }
