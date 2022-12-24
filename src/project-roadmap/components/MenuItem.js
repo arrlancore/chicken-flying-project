@@ -17,7 +17,7 @@ const MenuItem = () => {
       {menus.map((menu) => (
         <div className="flex items-center cursor-pointer card-menu-item">
           {menu.icon}
-          <div className="text-sm ml-4 text-strong-black font-bold">
+          <div className="text-sm ml-4 text-strong-black font-[600]">
             {menu.title}
           </div>
         </div>
