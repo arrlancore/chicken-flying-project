@@ -9,7 +9,7 @@ const buttonVariants = {
     "border-transparent bg-primary text-white shadow-sm hover:bg-[#20818E] focus:outline-none focus:ring-2 focus:ring-primary-light",
 };
 
-const Button = ({ variant, children, className, ...props }) => {
+const Button = ({ variant, loading, children, className, ...props }) => {
   const buttonVariant = buttonVariants[variant || "default"];
 
   return (
@@ -21,7 +21,9 @@ const Button = ({ variant, children, className, ...props }) => {
       ${buttonVariant}`}
       {...props}
     >
-      {children}
+      <div className="flex">
+        {loading ? <div className="button-loader" /> : null} {children}
+      </div>
     </button>
   );
 };
