@@ -14,6 +14,7 @@ const caption = {
 const DeleteTaskModal = ({ open, onCancel, onDelete, loading }) => {
   return (
     <Modal
+      onClose={loading ? () => {} : onCancel}
       open={open}
       title={
         <span className="flex items-center">
@@ -26,7 +27,12 @@ const DeleteTaskModal = ({ open, onCancel, onDelete, loading }) => {
           <Button onClick={onCancel} disabled={loading}>
             {caption.cancel}
           </Button>
-          <Button onClick={onDelete} disabled={loading} variant="danger">
+          <Button
+            onClick={onDelete}
+            loading={loading}
+            disabled={loading}
+            variant="danger"
+          >
             {caption.delete}
           </Button>
         </div>
