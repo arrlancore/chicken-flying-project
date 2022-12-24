@@ -21,7 +21,7 @@ const DeleteTaskModal = ({ open, onCancel, onDelete, loading }) => {
           <ExclamationIcon className="mr-3" /> {caption.title}
         </span>
       }
-      content={<di className="text-sm leading-6">{caption.description}</di>}
+      content={<div className="text-sm leading-6">{caption.description}</div>}
       footer={
         <div className="flex w-full justify-end gap-3">
           <Button onClick={onCancel} disabled={loading}>
