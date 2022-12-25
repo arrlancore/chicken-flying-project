@@ -31,7 +31,12 @@ const caption = {
   createNewTask: "Create New Task",
 };
 
-const ProjectRoadmapMain = ({ onCreateNewTask, onEditTask }) => {
+const ProjectRoadmapMain = ({
+  onCreateNewTask,
+  onEditTask,
+  onDeleteTask,
+  onMoveTask,
+}) => {
   const todo = useSelector((state) => state.todo);
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
@@ -83,12 +88,46 @@ const ProjectRoadmapMain = ({ onCreateNewTask, onEditTask }) => {
                         </div>
 
                         <PopoverCustom
-                          content={
+                          content={(onClose) => (
                             <MenuItem
                               hideLeft={indexTodo === 0}
                               hideRight={indexTodo === todo.todos.length - 1}
+                              onMoveLeft={() => {
+                                const todoIndexTarget = indexTodo - 1;
+                                onMoveTask({
+                                  ...item,
+                                  move: true,
+                                  todoId: data.id,
+                                  oldTodoId: data.id,
+                                  itemId: item.id,
+                                  target_todo_id:
+                                    todo.todos[todoIndexTarget].id,
+                                });
+                                onClose();
+                              }}
+                              onMoveRight={() => {
+                                const todoIndexTarget = indexTodo + 1;
+                                onMoveTask({
+                                  ...item,
+                                  move: true,
+                                  todoId: data.id,
+                                  oldTodoId: data.id,
+                                  itemId: item.id,
+                                  target_todo_id:
+                                    todo.todos[todoIndexTarget].id,
+                                });
+                                onClose();
+                              }}
+                              onEdit={() => {
+                                onEditTask(data.id, item);
+                                onClose();
+                              }}
+                              onDelete={() => {
+                                onDeleteTask(data.id, item.id);
+                                onClose();
+                              }}
                             />
-                          }
+                          )}
                         >
                           <MoreHorizontalIcon
                             id={PopoverCustom.id}
@@ -107,18 +146,18 @@ const ProjectRoadmapMain = ({ onCreateNewTask, onEditTask }) => {
                       {caption.noTask}
                     </span>
                   </ItemCard>
-                  <div className="h-3" />
-                  <div
-                    className="flex cursor-pointer"
-                    onClick={() => onCreateNewTask(data.id)}
-                  >
-                    <PlusCircleIcon />
-                    <div className="text-xs leading-5 ml-2">
-                      {caption.createNewTask}
-                    </div>
-                  </div>
                 </>
               )}
+              <div className="h-3" />
+              <div
+                className="flex cursor-pointer"
+                onClick={() => onCreateNewTask(data.id)}
+              >
+                <PlusCircleIcon />
+                <div className="text-xs leading-5 ml-2">
+                  {caption.createNewTask}
+                </div>
+              </div>
             </GroupCard>
           </div>
         ))}
