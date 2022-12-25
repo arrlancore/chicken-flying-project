@@ -1,16 +1,15 @@
 import { useState } from "react";
 import { Popover } from "react-tiny-popover";
-import useOnClickOutside from "../utils/use-click-outside";
 
 const PopoverCustom = ({ children, content }) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const onClose = () => setIsPopoverOpen(false);
 
-  useOnClickOutside(PopoverCustom.id, () => setIsPopoverOpen(false));
   return (
     <Popover
       isOpen={isPopoverOpen}
       positions={["bottom", "top", "left", "right"]} // preferred positions by priority
-      content={content}
+      content={content(onClose)}
       align="start"
     >
       <div
