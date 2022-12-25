@@ -11,7 +11,14 @@ const caption = {
   delete: "Delete",
 };
 
-const DeleteTaskModal = ({ open, onCancel, onDelete, loading }) => {
+const DeleteTaskModal = ({
+  open,
+  onCancel,
+  onDelete,
+  loading,
+  todoId,
+  itemId,
+}) => {
   return (
     <Modal
       onClose={loading ? () => {} : onCancel}
@@ -28,7 +35,10 @@ const DeleteTaskModal = ({ open, onCancel, onDelete, loading }) => {
             {caption.cancel}
           </Button>
           <Button
-            onClick={onDelete}
+            onClick={() => {
+              onDelete(todoId, itemId);
+              onCancel();
+            }}
             loading={loading}
             disabled={loading}
             variant="danger"

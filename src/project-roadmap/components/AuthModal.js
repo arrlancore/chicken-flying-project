@@ -72,6 +72,7 @@ const AuthModal = ({ open, onCancel }) => {
               label={caption.name}
               value={formData.name}
               onChange={(e) => onValueUpdate("name")(e.target.value)}
+              id="name"
             />
           )}
           <div className="h-3" />
@@ -80,6 +81,7 @@ const AuthModal = ({ open, onCancel }) => {
             label={caption.email}
             value={formData.email}
             onChange={(e) => onValueUpdate("email")(e.target.value)}
+            id="email"
           />
           <div className="h-3" />
           <TextField
@@ -88,6 +90,7 @@ const AuthModal = ({ open, onCancel }) => {
             value={formData.password}
             type="password"
             onChange={(e) => onValueUpdate("password")(e.target.value)}
+            id="password"
           />
           {renderIf(isSignUp)(
             <>
@@ -97,13 +100,14 @@ const AuthModal = ({ open, onCancel }) => {
                 label={caption.password_confirmation}
                 value={formData.password_confirmation}
                 type="password"
+                id="password_confirmation"
                 onChange={(e) =>
                   onValueUpdate("password_confirmation")(e.target.value)
                 }
               />
             </>
           )}
-          {renderIf(user.errorSignUp && isSignUp === false)(
+          {renderIf(user.errorLogin && isSignUp === false)(
             <div>
               <div className="h-3" />
               <small className="text-danger">{user.errorLogin}</small>
