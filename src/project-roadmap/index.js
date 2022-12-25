@@ -1,58 +1,45 @@
 import Header from "../base-components/Header";
-
-import AuthModal from "./components/AuthModal";
-import FormTaskModal from "./components/FormTaskModal";
-import DeleteTaskModal from "./components/DeleteTaskModal";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import ProjectRoadmapMainView from "./components/ProjectRoadmapMainView";
+import ProjectRoadmapModal, {
+  addGroupModal,
+  deleteTaskModal,
+  formTaskModal,
+  useCloseModalOnSuccess,
+  userAuthModal,
+} from "./components/ProjectRoadmapModal";
 import {
   createItem,
   createTodo,
   deleteItem,
   updateItem,
 } from "./store/todo/todoAction";
-import AddGroupModal from "./components/AddGroupModal";
-import ProjectRoadmapMain from "./components/ProjectRoadmapMain";
 
-const [userAuthModal, formTaskModal, deleteTaskModal, addGroupModal] = [
-  "userAuthModal",
-  "formTaskModal",
-  "deleteTaskModal",
-  "addGroupModal",
-];
-function renderProjectRoadmapModal(state, props = {}) {
-  switch (state) {
-    case userAuthModal:
-      return <AuthModal {...props} />;
-    case formTaskModal:
-      return <FormTaskModal {...props} />;
-    case deleteTaskModal:
-      return <DeleteTaskModal {...props} />;
-    case addGroupModal:
-      return <AddGroupModal {...props} />;
-    default:
-      return null;
-  }
-}
+export default function ProjectRoadmap() {
+  const dispatch = useDispatch();
+  const todo = useSelector((state) => state.todo);
+  const user = useSelector((state) => state.user);
 
-const createModalConfig = (setModal, todo, dispatch) => {
+  const [modal, setModal] = useState({ state: "", props: {} });
   const noModal = { state: "", props: { open: false } };
-  return {
+  const modalConfig = {
     noModal,
     userAuthModal: {
       open: true,
       onCancel: () => setModal(noModal),
     },
     deleteTaskModal: {
+      error: todo.error,
       todoId: null,
       itemId: null,
       open: true,
-      isEdit: false,
       onCancel: () => setModal(noModal),
-      onSubmit: (payload) => dispatch(deleteItem(payload)),
+      onDelete: (payload) => dispatch(deleteItem(payload)),
       loading: todo.loading,
     },
     formTaskModal: {
+      error: todo.error,
       todoId: null,
       itemId: null,
       defaultValue: {},
@@ -60,28 +47,24 @@ const createModalConfig = (setModal, todo, dispatch) => {
       open: true,
       onCancel: () => setModal(noModal),
       onSubmit: (isEdit, payload) => {
-        console.log("isEdit", payload);
-
-        dispatch(isEdit ? updateItem(payload) : createItem(payload));
+        dispatch(
+          isEdit
+            ? updateItem({ ...payload, target_todo_id: payload.todoId })
+            : createItem(payload)
+        );
       },
       loading: todo.loading,
     },
     addGroupModal: {
+      error: todo.error,
       open: true,
       onCancel: () => setModal(noModal),
       onSubmit: (payload) => dispatch(createTodo(payload)),
       loading: todo.loading,
     },
   };
-};
 
-export default function ProjectRoadmap() {
-  const dispatch = useDispatch();
-  const todo = useSelector((state) => state.todo);
-  const user = useSelector((state) => state.user);
-  const [modal, setModal] = useState({ state: "", props: {} });
-  const modalConfig = createModalConfig(setModal, todo, dispatch);
-
+  useCloseModalOnSuccess(todo, () => setModal(modalConfig.noModal));
   useEffect(() => {
     if (user.isLoggedIn) {
       if (modal.state === userAuthModal) {
@@ -91,13 +74,6 @@ export default function ProjectRoadmap() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user.isLoggedIn]);
 
-  useEffect(() => {
-    if (todo.createTodoSuccess || todo.createItemSuccess) {
-      setModal(modalConfig.noModal);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [todo.createTodoSuccess, todo.createItemSuccess]);
-
   const handleCreateNewTask = (todoId) => {
     setModal({
       state: formTaskModal,
@@ -105,12 +81,37 @@ export default function ProjectRoadmap() {
     });
   };
 
-  console.log(123, modal);
+  const handleEditTask = (todoId, { id, name, progress_percentage }) => {
+    setModal({
+      state: formTaskModal,
+      props: {
+        ...modalConfig.formTaskModal,
+        todoId,
+        itemId: id,
+        isEdit: true,
+        defaultValue: { name, progress_percentage },
+      },
+    });
+  };
+
+  const handleMoveTask = (payload) => {
+    dispatch(updateItem(payload));
+  };
+
+  const handleDeleteTask = (todoId, itemId) => {
+    setModal({
+      state: deleteTaskModal,
+      props: {
+        ...modalConfig.deleteTaskModal,
+        todoId,
+        itemId,
+      },
+    });
+  };
 
   return (
     <div className="relative bg-white font-sans">
       <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-12">
-        {/* header */}
         <Header
           onClickSignIn={() =>
             setModal({
@@ -126,10 +127,13 @@ export default function ProjectRoadmap() {
           }
           signedIn={user.isLoggedIn}
         />
-
-        {/* cards group */}
-        {renderProjectRoadmapModal(modal.state, modal.props)}
-        <ProjectRoadmapMain onCreateNewTask={handleCreateNewTask} />
+        <ProjectRoadmapModal state={modal.state} modalProps={modal.props} />
+        <ProjectRoadmapMainView
+          onCreateNewTask={handleCreateNewTask}
+          onEditTask={handleEditTask}
+          onMoveTask={handleMoveTask}
+          onDeleteTask={handleDeleteTask}
+        />
       </div>
     </div>
   );
