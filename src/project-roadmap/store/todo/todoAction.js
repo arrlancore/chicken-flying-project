@@ -3,7 +3,7 @@ import todoService from "./todoService";
 
 export const getTodo = createAsyncThunk(
   "todo/list",
-  async (auth_token, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
       const { data } = await todoService.getTodo();
 
@@ -77,6 +77,42 @@ export const deleteItem = createAsyncThunk(
       const { data } = await todoService.deleteItem(todoId, targetTodoId);
 
       return data.response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const getTodoWithItem = createAsyncThunk(
+  "todo/list-with-item",
+  async (_, { rejectWithValue }) => {
+    try {
+      const mapTodo = {};
+      const { data } = await todoService.getTodo();
+
+      data.response.forEach((data) => {
+        mapTodo[data.id] = data;
+      });
+
+      const itemsRequest = await Promise.all(
+        data.response.map((todo) => todoService.getItem(todo.id))
+      );
+
+      itemsRequest.forEach(({ data }) => {
+        const items = data.response;
+        if (items[0]) {
+          const mappedItem = {};
+          const todoId = items[0].todo_id;
+
+          items.forEach((item) => {
+            mappedItem[item.id] = item;
+          });
+
+          mapTodo[todoId] = { ...mapTodo[todoId], items: mappedItem };
+        }
+      });
+
+      return mapTodo;
     } catch (error) {
       return rejectWithValue(error.message);
     }
