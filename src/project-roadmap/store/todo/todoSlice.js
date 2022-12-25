@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createTodo, getTodo, getTodoWithItem } from "./todoAction";
+import { createItem, createTodo, getTodo, getTodoWithItem } from "./todoAction";
 
 const initialState = {
   todos: [],
@@ -8,6 +8,7 @@ const initialState = {
   error: null,
   deleteSuccess: false,
   createTodoSuccess: false,
+  createItemSuccess: false,
   updateItemSuccess: false,
 };
 
@@ -45,10 +46,30 @@ const todoSlice = createSlice({
       state.loading = false;
       state.mapTodos[payload.id] = payload;
       state.todos = toArray(payload);
+      state.createTodoSuccess = true;
     });
     builder.addCase(createTodo.rejected, (state, { payload }) => {
       state.loading = false;
       state.error = payload;
+      state.createTodoSuccess = false;
+    });
+
+    builder.addCase(createItem.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(createItem.fulfilled, (state, { payload }) => {
+      state.loading = false;
+      const todo = state.mapTodos[payload.todo_id];
+      todo.items[payload.id] = payload;
+      state.mapTodos[payload.todo_id] = todo;
+      state.todos = toArray(state.mapTodos);
+      state.createItemSuccess = true;
+    });
+    builder.addCase(createItem.rejected, (state, { payload }) => {
+      state.loading = false;
+      state.error = payload;
+      state.createItemSuccess = false;
     });
   },
 });

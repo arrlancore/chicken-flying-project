@@ -6,8 +6,8 @@ import TextField from "../../base-components/TextField";
 const caption = {
   createTitle: "Create Task",
   editTitle: "Edit Task",
-  taskName: "Task Name",
-  progress: "Progress",
+  name: "Task Name",
+  progress_percentage: "Progress",
   cancel: "Cancel",
   save: "Save Task",
 };
@@ -19,9 +19,10 @@ const FormTaskModal = ({
   loading,
   isEdit,
   defaultValue,
+  todoId,
 }) => {
   const title = isEdit ? caption.editTitle : caption.createTitle;
-  const initFormData = defaultValue || {};
+  const initFormData = defaultValue || { name: "", progress_percentage: "" };
   const [formData, setFormData] = useState(initFormData);
 
   const onValueUpdate = (key) => (value) => {
@@ -30,6 +31,8 @@ const FormTaskModal = ({
 
     setFormData(formDataDraft);
   };
+
+  console.log("first", todoId);
 
   return (
     <Modal
@@ -40,17 +43,19 @@ const FormTaskModal = ({
         <div>
           <TextField
             placeholder="Type your task"
-            label={caption.taskName}
-            value={formData.taskName}
-            onChange={(e) => onValueUpdate("taskName")(e.target.value)}
+            label={caption.name}
+            value={formData.name}
+            onChange={(e) => onValueUpdate("name")(e.target.value)}
           />
           <div className="h-3" />
           <TextField
             placeholder="70%"
-            label={caption.progress}
-            value={formData.progress}
+            label={caption.progress_percentage}
+            value={formData.progress_percentage}
             type="number"
-            onChange={(e) => onValueUpdate("progress")(Number(e.target.value))}
+            onChange={(e) =>
+              onValueUpdate("progress_percentage")(Number(e.target.value))
+            }
           />
         </div>
       }
@@ -60,7 +65,10 @@ const FormTaskModal = ({
             {caption.cancel}
           </Button>
           <Button
-            onClick={() => onSubmit(formData)}
+            onClick={() => {
+              console.log("s", formData);
+              onSubmit(isEdit, { ...formData, todoId });
+            }}
             loading={loading}
             disabled={loading}
             variant="primary"

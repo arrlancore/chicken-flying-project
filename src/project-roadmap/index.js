@@ -1,42 +1,18 @@
 import Header from "../base-components/Header";
-import { ReactComponent as CheckList } from "../assets/icon/checklist.svg";
-import { ReactComponent as MoreHorizontalIcon } from "../assets/icon/more-horizontal.svg";
-import GroupCard from "./components/GroupCard";
-import GroupLabel from "./components/GroupLabel";
-import ItemCard from "./components/ItemCard";
-import Progress from "../base-components/Progress";
-import PopoverCustom from "../base-components/PopoverCustom";
-import MenuItem from "./components/MenuItem";
+
 import AuthModal from "./components/AuthModal";
 import FormTaskModal from "./components/FormTaskModal";
 import DeleteTaskModal from "./components/DeleteTaskModal";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createItem,
   createTodo,
   deleteItem,
-  getTodoWithItem,
   updateItem,
 } from "./store/todo/todoAction";
-import { renderIf } from "../utils";
 import AddGroupModal from "./components/AddGroupModal";
-import usePrevious from "../utils/use-previous";
 import ProjectRoadmapMain from "./components/ProjectRoadmapMain";
-
-const toVariant = (index) => {
-  const value = (index + 1) % 4; // 4 total of variant
-  switch (value) {
-    case 1:
-      return "primary";
-    case 2:
-      return "secondary";
-    case 3:
-      return "danger";
-    default:
-      return "success";
-  }
-};
 
 const [userAuthModal, formTaskModal, deleteTaskModal, addGroupModal] = [
   "userAuthModal",
@@ -77,12 +53,17 @@ const createModalConfig = (setModal, todo, dispatch) => {
       loading: todo.loading,
     },
     formTaskModal: {
+      todoId: null,
+      itemId: null,
       defaultValue: {},
       isEdit: false,
       open: true,
       onCancel: () => setModal(noModal),
-      onSubmit: (isEdit, payload) =>
-        dispatch(isEdit ? updateItem(payload) : createItem(payload)),
+      onSubmit: (isEdit, payload) => {
+        console.log("isEdit", payload);
+
+        dispatch(isEdit ? updateItem(payload) : createItem(payload));
+      },
       loading: todo.loading,
     },
     addGroupModal: {
@@ -111,9 +92,20 @@ export default function ProjectRoadmap() {
   }, [user.isLoggedIn]);
 
   useEffect(() => {
-    setModal(modalConfig.noModal);
+    if (todo.createTodoSuccess || todo.createItemSuccess) {
+      setModal(modalConfig.noModal);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [todo.mapTodos]);
+  }, [todo.createTodoSuccess, todo.createItemSuccess]);
+
+  const handleCreateNewTask = (todoId) => {
+    setModal({
+      state: formTaskModal,
+      props: { ...modalConfig.formTaskModal, todoId },
+    });
+  };
+
+  console.log(123, modal);
 
   return (
     <div className="relative bg-white font-sans">
@@ -137,7 +129,7 @@ export default function ProjectRoadmap() {
 
         {/* cards group */}
         {renderProjectRoadmapModal(modal.state, modal.props)}
-        <ProjectRoadmapMain />
+        <ProjectRoadmapMain onCreateNewTask={handleCreateNewTask} />
       </div>
     </div>
   );

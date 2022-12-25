@@ -52,7 +52,7 @@ export const createItem = createAsyncThunk(
     try {
       const { data } = await todoService.createItem(todoId, payload);
 
-      return data.response;
+      return data;
     } catch (error) {
       return handleError(rejectWithValue, error);
     }
