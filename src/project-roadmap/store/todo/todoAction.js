@@ -7,18 +7,18 @@ const handleError = (reject, error) => {
   return reject(responseMessage || error.message);
 };
 
-export const getTodo = createAsyncThunk(
-  "todo/list",
-  async (_, { rejectWithValue }) => {
-    try {
-      const { data } = await todoService.getTodo();
+// export const getTodo = createAsyncThunk(
+//   "todo/list",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const { data } = await todoService.getTodo();
 
-      return data.response;
-    } catch (error) {
-      return handleError(rejectWithValue, error);
-    }
-  }
-);
+//       return data.response;
+//     } catch (error) {
+//       return handleError(rejectWithValue, error);
+//     }
+//   }
+// );
 
 export const createTodo = createAsyncThunk(
   "todo/create",
@@ -33,18 +33,18 @@ export const createTodo = createAsyncThunk(
   }
 );
 
-export const getItem = createAsyncThunk(
-  "todo/get-item",
-  async (payload, { rejectWithValue }) => {
-    try {
-      const { data } = await todoService.getItem(payload);
+// export const getItem = createAsyncThunk(
+//   "todo/get-item",
+//   async (payload, { rejectWithValue }) => {
+//     try {
+//       const { data } = await todoService.getItem(payload);
 
-      return data.response;
-    } catch (error) {
-      return handleError(rejectWithValue, error);
-    }
-  }
-);
+//       return data.response;
+//     } catch (error) {
+//       return handleError(rejectWithValue, error);
+//     }
+//   }
+// );
 
 export const createItem = createAsyncThunk(
   "todo/create-item",
@@ -65,7 +65,7 @@ export const updateItem = createAsyncThunk(
     try {
       const { data } = await todoService.updateItem(todoId, itemId, payload);
 
-      return data.response;
+      return { ...data, oldTodoId: payload.oldTodoId };
     } catch (error) {
       return handleError(rejectWithValue, error);
     }
@@ -76,9 +76,9 @@ export const deleteItem = createAsyncThunk(
   "todo/delete-item",
   async ({ todoId, itemId }, { rejectWithValue }) => {
     try {
-      const { data } = await todoService.deleteItem(todoId, itemId);
+      await todoService.deleteItem(todoId, itemId);
 
-      return data.response;
+      return { todoId, itemId };
     } catch (error) {
       return handleError(rejectWithValue, error);
     }

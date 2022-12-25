@@ -1,4 +1,4 @@
-import { ITEM_URL, TODO_URL } from "../../../constants";
+import { ITEM_URL, PATCH_ITEM_URL, TODO_URL } from "../../../constants";
 import axios from "axios";
 import localStorageService from "../user/localStorageService";
 
@@ -43,9 +43,9 @@ function createItem(todoId, payload) {
   });
 }
 
-function updateItem(todoId, targetTodoId, payload) {
+function updateItem(todoId, itemId, payload) {
   return axios.patch(
-    ITEM_URL.replace("{id}", todoId).replace("{targetTodoId}", targetTodoId),
+    PATCH_ITEM_URL.replace("{id}", todoId).replace("{itemId}", itemId),
     payload,
     {
       headers: defaultHeader(),
@@ -53,9 +53,9 @@ function updateItem(todoId, targetTodoId, payload) {
   );
 }
 
-function deleteItem(todoId, targetTodoId) {
+function deleteItem(todoId, itemId) {
   return axios.delete(
-    ITEM_URL.replace("{id}", todoId).replace("{targetTodoId}", targetTodoId),
+    PATCH_ITEM_URL.replace("{id}", todoId).replace("{itemId}", itemId),
     {
       headers: defaultHeader(),
     }

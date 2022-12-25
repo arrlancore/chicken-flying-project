@@ -1,12 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createItem, createTodo, getTodo, getTodoWithItem } from "./todoAction";
+import {
+  createItem,
+  createTodo,
+  deleteItem,
+  getTodoWithItem,
+  updateItem,
+} from "./todoAction";
 
 const initialState = {
   todos: [],
   mapTodos: {},
   loading: true,
   error: null,
-  deleteSuccess: false,
+  deleteItemSuccess: false,
   createTodoSuccess: false,
   createItemSuccess: false,
   updateItemSuccess: false,
@@ -41,6 +47,7 @@ const todoSlice = createSlice({
     builder.addCase(createTodo.pending, (state) => {
       state.loading = true;
       state.error = null;
+      state.createTodoSuccess = false;
     });
     builder.addCase(createTodo.fulfilled, (state, { payload }) => {
       state.loading = false;
@@ -57,6 +64,7 @@ const todoSlice = createSlice({
     builder.addCase(createItem.pending, (state) => {
       state.loading = true;
       state.error = null;
+      state.createItemSuccess = false;
     });
     builder.addCase(createItem.fulfilled, (state, { payload }) => {
       state.loading = false;
@@ -70,6 +78,51 @@ const todoSlice = createSlice({
       state.loading = false;
       state.error = payload;
       state.createItemSuccess = false;
+    });
+
+    builder.addCase(updateItem.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+      state.updateItemSuccess = false;
+    });
+    builder.addCase(updateItem.fulfilled, (state, { payload }) => {
+      state.loading = false;
+      const todo = state.mapTodos[payload.todo_id];
+      todo.items[payload.id] = payload;
+      state.mapTodos[payload.todo_id] = todo;
+
+      if (payload.oldTodoId) {
+        const todo = state.mapTodos[payload.oldTodoId];
+        delete todo.items[payload.id];
+        state.mapTodos[payload.oldTodoId] = todo;
+      }
+
+      state.todos = toArray(state.mapTodos);
+      state.updateItemSuccess = true;
+    });
+    builder.addCase(updateItem.rejected, (state, { payload }) => {
+      state.loading = false;
+      state.error = payload;
+      state.updateItemSuccess = false;
+    });
+
+    builder.addCase(deleteItem.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+      state.deleteItemSuccess = false;
+    });
+    builder.addCase(deleteItem.fulfilled, (state, { payload }) => {
+      state.loading = false;
+      const todo = state.mapTodos[payload.todoId];
+      delete todo.items[payload.itemId];
+      state.mapTodos[payload.todoId] = todo;
+      state.todos = toArray(state.mapTodos);
+      state.deleteItemSuccess = true;
+    });
+    builder.addCase(deleteItem.rejected, (state, { payload }) => {
+      state.loading = false;
+      state.error = payload;
+      state.deleteItemSuccess = false;
     });
   },
 });
