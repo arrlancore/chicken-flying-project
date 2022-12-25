@@ -2,6 +2,12 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import localStorageService from "./localStorageService";
 import authService from "./userService";
 
+const handleError = (reject, error) => {
+  const responseMessage =
+    error.response && error.response.data ? error.response.data.message : "";
+  return reject(responseMessage || error.message);
+};
+
 export const signUpUser = createAsyncThunk(
   "user/sign-up",
   async (payload, { rejectWithValue }) => {
@@ -11,10 +17,7 @@ export const signUpUser = createAsyncThunk(
 
       return data.auth_token;
     } catch (error) {
-      const responseMessage = error.response.data
-        ? error.response.data.message
-        : "";
-      return rejectWithValue(responseMessage || error.message);
+      return handleError(rejectWithValue, error);
     }
   }
 );
@@ -28,10 +31,7 @@ export const loginUser = createAsyncThunk(
 
       return data.auth_token;
     } catch (error) {
-      const responseMessage = error.response.data
-        ? error.response.data.message
-        : "";
-      return rejectWithValue(responseMessage || error.message);
+      return handleError(rejectWithValue, error);
     }
   }
 );
