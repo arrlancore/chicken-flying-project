@@ -4,4 +4,4 @@ export const LOGIN_URL = `${BASE_URL}/auth/login`;
 export const SIGNUP_URL = `${BASE_URL}/signup`;
 export const TODO_URL = `${BASE_URL}/todos`;
 export const ITEM_URL = `${BASE_URL}/todos/{id}/items`;
-export const PATCH_ITEM_URL = `${BASE_URL}/todos/{id}/items/{targetTodoId}`;
+export const PATCH_ITEM_URL = `${BASE_URL}/todos/{id}/items/{itemId}`;
