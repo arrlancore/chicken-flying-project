@@ -16,6 +16,8 @@ import {
   updateItem,
 } from "./store/todo/todoAction";
 import { logOut } from "./store/user/userSlice";
+import SignInInstruction from "./components/SignInInstruction";
+import { renderIf } from "../utils";
 
 export default function ProjectRoadmap() {
   const dispatch = useDispatch();
@@ -138,6 +140,7 @@ export default function ProjectRoadmap() {
           onMoveTask={handleMoveTask}
           onDeleteTask={handleDeleteTask}
         />
+        {renderIf(user.isLoggedIn === false)(<SignInInstruction />)}
       </div>
     </div>
   );
