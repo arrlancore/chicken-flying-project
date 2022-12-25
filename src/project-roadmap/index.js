@@ -10,51 +10,19 @@ import MenuItem from "./components/MenuItem";
 import AuthModal from "./components/AuthModal";
 import FormTaskModal from "./components/FormTaskModal";
 import DeleteTaskModal from "./components/DeleteTaskModal";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createItem, deleteItem, updateItem } from "./store/todo/todoAction";
+import {
+  createItem,
+  createTodo,
+  deleteItem,
+  getTodoWithItem,
+  updateItem,
+} from "./store/todo/todoAction";
 import { renderIf } from "../utils";
-
-const cardData = [
-  {
-    title: "Group 1",
-    description: "January - March",
-    items: [
-      {
-        name: "Create New Campaign",
-        progress_percentage: 80,
-      },
-      {
-        name: "Create New Landing Page",
-        progress_percentage: 100,
-      },
-    ],
-  },
-  {
-    title: "Group 2",
-    description: "January - March",
-    items: [
-      {
-        name: "Create New Campaign",
-        progress_percentage: 80,
-      },
-      {
-        name: "Create New Landing Page",
-        progress_percentage: 100,
-      },
-    ],
-  },
-  {
-    title: "Group 3",
-    description: "January - March",
-    items: [],
-  },
-  {
-    title: "Group 4",
-    description: "January - March",
-    items: [],
-  },
-];
+import AddGroupModal from "./components/AddGroupModal";
+import usePrevious from "../utils/use-previous";
+import ProjectRoadmapMain from "./components/ProjectRoadmapMain";
 
 const toVariant = (index) => {
   const value = (index + 1) % 4; // 4 total of variant
@@ -70,13 +38,13 @@ const toVariant = (index) => {
   }
 };
 
+const [userAuthModal, formTaskModal, deleteTaskModal, addGroupModal] = [
+  "userAuthModal",
+  "formTaskModal",
+  "deleteTaskModal",
+  "addGroupModal",
+];
 function renderProjectRoadmapModal(state, props = {}) {
-  const [userAuthModal, formTaskModal, deleteTaskModal] = [
-    "userAuthModal",
-    "formTaskModal",
-    "deleteTaskModal",
-  ];
-
   switch (state) {
     case userAuthModal:
       return <AuthModal {...props} />;
@@ -84,6 +52,8 @@ function renderProjectRoadmapModal(state, props = {}) {
       return <FormTaskModal {...props} />;
     case deleteTaskModal:
       return <DeleteTaskModal {...props} />;
+    case addGroupModal:
+      return <AddGroupModal {...props} />;
     default:
       return null;
   }
@@ -115,6 +85,12 @@ const createModalConfig = (setModal, todo, dispatch) => {
         dispatch(isEdit ? updateItem(payload) : createItem(payload)),
       loading: todo.loading,
     },
+    addGroupModal: {
+      open: true,
+      onCancel: () => setModal(noModal),
+      onSubmit: (payload) => dispatch(createTodo(payload)),
+      loading: todo.loading,
+    },
   };
 };
 
@@ -124,14 +100,20 @@ export default function ProjectRoadmap() {
   const user = useSelector((state) => state.user);
   const [modal, setModal] = useState({ state: "", props: {} });
   const modalConfig = createModalConfig(setModal, todo, dispatch);
-  console.log(modal);
 
   useEffect(() => {
     if (user.isLoggedIn) {
-      setModal(modalConfig.noModal);
+      if (modal.state === userAuthModal) {
+        setModal(modalConfig.noModal);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user.isLoggedIn]);
+
+  useEffect(() => {
+    setModal(modalConfig.noModal);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [todo.mapTodos]);
 
   return (
     <div className="relative bg-white font-sans">
@@ -140,8 +122,14 @@ export default function ProjectRoadmap() {
         <Header
           onClickSignIn={() =>
             setModal({
-              state: "userAuthModal",
+              state: userAuthModal,
               props: modalConfig.userAuthModal,
+            })
+          }
+          onClickNewGroup={() =>
+            setModal({
+              state: addGroupModal,
+              props: modalConfig.addGroupModal,
             })
           }
           signedIn={user.isLoggedIn}
@@ -149,57 +137,7 @@ export default function ProjectRoadmap() {
 
         {/* cards group */}
         {renderProjectRoadmapModal(modal.state, modal.props)}
-        {renderIf(user.isLoggedIn)(
-          <section id="form" className="mt-5">
-            <div className="flex items-start flex-wrap gap-4 overflow-x-auto">
-              {cardData.map((data, index) => (
-                <div className="mb-4 flex-1 max-w-[326px] min-w-[326px]">
-                  <GroupCard variant={toVariant(index)}>
-                    <GroupLabel variant={toVariant(index)}>
-                      {data.title}
-                    </GroupLabel>
-                    <div className="h-3" />
-                    <div className="text-xs leading-5 font-bold">
-                      {data.description}
-                    </div>
-                    {data.items.map((item) => (
-                      <>
-                        <div className="h-3" />
-                        <ItemCard>
-                          <div className="text-sm leading-6 font-bold">
-                            {item.name}
-                          </div>
-                          <div className="border-b-[#E0E0E0] border-b-[1px] border-dashed my-1" />
-                          <div className="flex justify-between">
-                            <div className="flex items-center">
-                              <Progress percentage={item.progress_percentage} />
-                              <div className="ml-2">
-                                {item.progress_percentage === 100 ? (
-                                  <CheckList />
-                                ) : (
-                                  <span className="text-xs text-[#75757]">
-                                    {item.progress_percentage + "%"}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-
-                            <PopoverCustom content={<MenuItem />}>
-                              <MoreHorizontalIcon
-                                id={PopoverCustom.id}
-                                className="hover:bg-[#EDEDED] hover:rounded cursor-pointer"
-                              />
-                            </PopoverCustom>
-                          </div>
-                        </ItemCard>
-                      </>
-                    ))}
-                  </GroupCard>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+        <ProjectRoadmapMain />
       </div>
     </div>
   );
