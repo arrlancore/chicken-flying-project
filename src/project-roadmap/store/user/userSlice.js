@@ -7,7 +7,8 @@ const initialState = {
   isLoggedIn: false,
   signUpSuccess: false,
   loading: false,
-  error: null,
+  errorLogin: null,
+  errorSignUp: null,
 };
 
 const userSlice = createSlice({
@@ -27,29 +28,30 @@ const userSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(signUpUser.pending, (state) => {
       state.loading = true;
-      state.error = null;
+      state.errorSignUp = null;
     });
     builder.addCase(signUpUser.fulfilled, (state, { payload }) => {
       state.loading = false;
       state.signUpSuccess = true;
+      state.userToken = payload;
     });
     builder.addCase(signUpUser.rejected, (state, { payload }) => {
       state.loading = false;
-      state.error = payload;
+      state.errorSignUp = payload;
     });
 
     builder.addCase(loginUser.pending, (state) => {
       state.loading = true;
-      state.error = null;
+      state.errorLogin = null;
     });
     builder.addCase(loginUser.fulfilled, (state, { payload }) => {
       state.loading = false;
       state.isLoggedIn = true;
-      state.userToken = payload.message.loginToken;
+      state.userToken = payload;
     });
     builder.addCase(loginUser.rejected, (state, { payload }) => {
       state.loading = false;
-      state.error = payload;
+      state.errorLogin = payload;
     });
   },
 });

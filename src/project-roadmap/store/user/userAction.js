@@ -9,9 +9,12 @@ export const signUpUser = createAsyncThunk(
       const { data } = await authService.signUp(payload);
       localStorageService.saveToken(data.auth_token);
 
-      return data.response;
+      return data.auth_token;
     } catch (error) {
-      return rejectWithValue(error.message);
+      const responseMessage = error.response.data
+        ? error.response.data.message
+        : "";
+      return rejectWithValue(responseMessage || error.message);
     }
   }
 );
@@ -23,9 +26,12 @@ export const loginUser = createAsyncThunk(
       const { data } = await authService.login(payload);
       localStorageService.saveToken(data.auth_token);
 
-      return data.response;
+      return data.auth_token;
     } catch (error) {
-      return rejectWithValue(error.message);
+      const responseMessage = error.response.data
+        ? error.response.data.message
+        : "";
+      return rejectWithValue(responseMessage || error.message);
     }
   }
 );
