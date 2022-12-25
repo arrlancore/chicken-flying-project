@@ -55,13 +55,9 @@ export const createItem = createAsyncThunk(
 
 export const updateItem = createAsyncThunk(
   "todo/update-item",
-  async ({ todoId, targetTodoId, ...payload }, { rejectWithValue }) => {
+  async ({ todoId, itemId, ...payload }, { rejectWithValue }) => {
     try {
-      const { data } = await todoService.updateItem(
-        todoId,
-        targetTodoId,
-        payload
-      );
+      const { data } = await todoService.updateItem(todoId, itemId, payload);
 
       return data.response;
     } catch (error) {
@@ -72,9 +68,9 @@ export const updateItem = createAsyncThunk(
 
 export const deleteItem = createAsyncThunk(
   "todo/delete-item",
-  async ({ todoId, targetTodoId }, { rejectWithValue }) => {
+  async ({ todoId, itemId }, { rejectWithValue }) => {
     try {
-      const { data } = await todoService.deleteItem(todoId, targetTodoId);
+      const { data } = await todoService.deleteItem(todoId, itemId);
 
       return data.response;
     } catch (error) {
