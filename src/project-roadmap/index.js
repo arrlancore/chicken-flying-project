@@ -15,6 +15,7 @@ import {
   deleteItem,
   updateItem,
 } from "./store/todo/todoAction";
+import { logOut } from "./store/user/userSlice";
 
 export default function ProjectRoadmap() {
   const dispatch = useDispatch();
@@ -125,6 +126,9 @@ export default function ProjectRoadmap() {
               props: modalConfig.addGroupModal,
             })
           }
+          onClickSignOut={() => {
+            dispatch(logOut());
+          }}
           signedIn={user.isLoggedIn}
         />
         <ProjectRoadmapModal state={modal.state} modalProps={modal.props} />

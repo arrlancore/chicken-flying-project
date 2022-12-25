@@ -1,11 +1,13 @@
 import React from "react";
 import { ReactComponent as PlusIcon } from "../assets/icon/plus.svg";
 import { renderIf } from "../utils";
+import Button from "./Button";
 
 const caption = {
   title: "Project Roadmap",
   signIn: "Sign In",
   newGroup: "Add New Group",
+  signout: "Sign Out",
 };
 
 const HeaderButton = ({ children, ...rest }) => {
@@ -20,7 +22,12 @@ const HeaderButton = ({ children, ...rest }) => {
   );
 };
 
-const Header = ({ signedIn, onClickNewGroup, onClickSignIn }) => {
+const Header = ({
+  signedIn,
+  onClickNewGroup,
+  onClickSignIn,
+  onClickSignOut,
+}) => {
   return (
     <header>
       <div
@@ -46,6 +53,9 @@ const Header = ({ signedIn, onClickNewGroup, onClickSignIn }) => {
             <HeaderButton onClick={onClickSignIn}>
               {caption.signIn}
             </HeaderButton>
+          )}
+          {renderIf(signedIn)(
+            <Button onClick={onClickSignOut}>{caption.signout}</Button>
           )}
         </div>
       </div>
