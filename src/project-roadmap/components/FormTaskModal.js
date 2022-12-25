@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Button from "../../base-components/Button";
 import Modal from "../../base-components/Modal";
 import TextField from "../../base-components/TextField";
+import { renderIf } from "../../utils";
 
 const caption = {
   createTitle: "Create Task",
@@ -20,6 +21,8 @@ const FormTaskModal = ({
   isEdit,
   defaultValue,
   todoId,
+  itemId,
+  error,
 }) => {
   const title = isEdit ? caption.editTitle : caption.createTitle;
   const initFormData = defaultValue || { name: "", progress_percentage: "" };
@@ -31,8 +34,6 @@ const FormTaskModal = ({
 
     setFormData(formDataDraft);
   };
-
-  console.log("first", todoId);
 
   return (
     <Modal
@@ -57,6 +58,12 @@ const FormTaskModal = ({
               onValueUpdate("progress_percentage")(Number(e.target.value))
             }
           />
+          {renderIf(error)(
+            <div>
+              <div className="h-3" />
+              <small className="text-danger">{error}</small>
+            </div>
+          )}
         </div>
       }
       footer={
@@ -66,8 +73,7 @@ const FormTaskModal = ({
           </Button>
           <Button
             onClick={() => {
-              console.log("s", formData);
-              onSubmit(isEdit, { ...formData, todoId });
+              onSubmit(isEdit, { ...formData, todoId, itemId });
             }}
             loading={loading}
             disabled={loading}

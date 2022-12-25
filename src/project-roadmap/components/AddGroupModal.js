@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Button from "../../base-components/Button";
 import Modal from "../../base-components/Modal";
 import TextField from "../../base-components/TextField";
+import { renderIf } from "../../utils";
 
 const caption = {
   title: "Add Group",
@@ -10,7 +11,7 @@ const caption = {
   cancel: "Cancel",
 };
 
-const AddGroupModal = ({ open, onCancel, onSubmit, loading }) => {
+const AddGroupModal = ({ open, onCancel, onSubmit, loading, error }) => {
   const initFormData = { title: "", description: "" };
   const [formData, setFormData] = useState(initFormData);
 
@@ -41,6 +42,12 @@ const AddGroupModal = ({ open, onCancel, onSubmit, loading }) => {
             value={formData.description}
             onChange={(e) => onValueUpdate("description")(e.target.value)}
           />
+          {renderIf(error)(
+            <div>
+              <div className="h-3" />
+              <small className="text-danger">{error}</small>
+            </div>
+          )}
         </div>
       }
       footer={
