@@ -10,41 +10,41 @@ import MenuItem from "./components/MenuItem";
 
 const cardData = [
   {
-    groupTitle: "Group 1",
-    period: "January - March",
+    title: "Group 1",
+    description: "January - March",
     items: [
       {
-        title: "Create New Campaign",
-        progress: 80,
+        name: "Create New Campaign",
+        progress_percentage: 80,
       },
       {
-        title: "Create New Landing Page",
-        progress: 100,
+        name: "Create New Landing Page",
+        progress_percentage: 100,
       },
     ],
   },
   {
-    groupTitle: "Group 2",
-    period: "January - March",
+    title: "Group 2",
+    description: "January - March",
     items: [
       {
-        title: "Create New Campaign",
-        progress: 80,
+        name: "Create New Campaign",
+        progress_percentage: 80,
       },
       {
-        title: "Create New Landing Page",
-        progress: 100,
+        name: "Create New Landing Page",
+        progress_percentage: 100,
       },
     ],
   },
   {
-    groupTitle: "Group 3",
-    period: "January - March",
+    title: "Group 3",
+    description: "January - March",
     items: [],
   },
   {
-    groupTitle: "Group 4",
-    period: "January - March",
+    title: "Group 4",
+    description: "January - March",
     items: [],
   },
 ];
@@ -77,29 +77,29 @@ export default function ProjectRoadmap() {
               <div className="mb-4 flex-1 max-w-[326px] min-w-[326px]">
                 <GroupCard variant={toVariant(index)}>
                   <GroupLabel variant={toVariant(index)}>
-                    {data.groupTitle}
+                    {data.title}
                   </GroupLabel>
                   <div className="h-3" />
                   <div className="text-xs leading-5 font-bold">
-                    {data.period}
+                    {data.description}
                   </div>
                   {data.items.map((item) => (
                     <>
                       <div className="h-3" />
                       <ItemCard>
                         <div className="text-sm leading-6 font-bold">
-                          {item.title}
+                          {item.name}
                         </div>
                         <div className="border-b-[#E0E0E0] border-b-[1px] border-dashed my-1" />
                         <div className="flex justify-between">
                           <div className="flex items-center">
-                            <Progress percentage={item.progress} />
+                            <Progress percentage={item.progress_percentage} />
                             <div className="ml-2">
-                              {item.progress === 100 ? (
+                              {item.progress_percentage === 100 ? (
                                 <CheckList />
                               ) : (
                                 <span className="text-xs text-[#75757]">
-                                  {item.progress + "%"}
+                                  {item.progress_percentage + "%"}
                                 </span>
                               )}
                             </div>
