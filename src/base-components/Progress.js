@@ -6,9 +6,9 @@ const Progress = ({ percentage }) => {
   const roundBg = isCompleted ? "bg-success" : "bg-primary";
 
   return (
-    <div class="w-[175px] bg-[#EDEDED] rounded-full h-4">
+    <div className="w-[175px] bg-[#EDEDED] rounded-full h-4">
       <div
-        class={`h-4 ${roundBarStyle} ${roundBg}`}
+        className={`h-4 ${roundBarStyle} ${roundBg}`}
         style={{ width: `${percentage}%` }}
       ></div>
     </div>
