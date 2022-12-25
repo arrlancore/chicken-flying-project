@@ -31,6 +31,12 @@ async function getItem(todoId) {
   });
 }
 
+async function getMultipleItem(todoIds) {
+  const multipleRequest = Promise.all(todoIds.map((id) => getItem(id)));
+
+  return multipleRequest;
+}
+
 function createItem(todoId, payload) {
   return axios.post(ITEM_URL.replace("{id}", todoId), payload, {
     headers: defaultHeader(),
@@ -63,6 +69,7 @@ const todoService = {
   createItem,
   updateItem,
   deleteItem,
+  getMultipleItem,
 };
 
 export default todoService;
